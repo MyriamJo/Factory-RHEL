@@ -1,17 +1,16 @@
 # Factory User & Task Management — RHEL System Administration
 
 A small factory's employee/task-tracking system built entirely out of Linux users, groups, and
-filesystem permissions on Red Hat Enterprise Linux — no application code, just the OS's own
-access-control primitives doing the enforcement, plus two bash scripts for the day-to-day
-workflow.
+filesystem permissions on Red Hat Enterprise Linux, the OS's own access-control primitives doing the enforcement,
+plus two bash scripts for the day-to-day workflow.
 
 ## Scenario
 
 One supervisor oversees 3 engineers and 3 operators, organized into 3 paired production lines
 (each pairing one engineer with one operator). Every employee is assigned 10 tasks. Employees
 submit finished tasks into a personal drop box; the supervisor runs a script that scores each
-employee's completion ratio. Everything — who can read whose task list, who can submit where, who
-can see what's been turned in — is enforced by Unix ownership, group membership, and permission
+employee's completion ratio. Everything (who can read whose task list, who can submit where, who
+can see what's been turned in) is enforced by Unix ownership, group membership, and permission
 bits, rather than by any application logic.
 
 ```
@@ -38,13 +37,13 @@ Two ideas do most of the work here:
 
 **Group-scoped read access.** Each employee's task directory and task files are group-owned by a
 group only they (and, for the paired production-line groups, their line partner) belong to, with
-mode 750 — so the supervisor (who owns everything) can always read and write, the assigned
+mode 750, so the supervisor (who owns everything) can always read and write, the assigned
 employee can read, and nobody else on the system can see it at all.
 
 **The drop-box pattern for submissions.** Each employee's `completed_tasks/<name>` directory
 combines two special permission bits: setgid, so any file they drop in is automatically
 group-owned by `supervisor` regardless of the submitter's own group; and the sticky bit, so once a
-file is submitted, only its owner or the supervisor can delete or rename it — a submission can't
+file is submitted, only its owner or the supervisor can delete or rename it, a submission can't
 be tampered with after the fact, even by someone who could otherwise write to that directory.
 `docs/permissions-reference.md` has the full ownership/permission tables and explains the exact
 bits.
